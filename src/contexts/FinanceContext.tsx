@@ -14,6 +14,7 @@ interface FinanceContextValue extends FinanceState {
   updateTransaction: (t: Transaction) => void
   removeTransaction: (id: string) => void
   setProfile: (p: FinancialProfile) => void
+  removeProfile: () => void
   addGoal: (g: FinancialGoal) => void
   updateGoal: (g: FinancialGoal) => void
   removeGoal: (id: string) => void
@@ -26,10 +27,8 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
     StorageKeys.transactions,
     [],
   )
-  const [profile, setProfileData] = useLocalStorage<FinancialProfile | null>(
-    StorageKeys.profile,
-    null,
-  )
+  const [profile, setProfileData, removeProfileData] =
+    useLocalStorage<FinancialProfile | null>(StorageKeys.profile, null)
   const [goals, setGoals] = useLocalStorage<FinancialGoal[]>(
     StorageKeys.goals,
     [],
@@ -54,6 +53,11 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
   const setProfile = useCallback(
     (p: FinancialProfile) => setProfileData(p),
     [setProfileData],
+  )
+
+  const removeProfile = useCallback(
+    () => removeProfileData(),
+    [removeProfileData],
   )
 
   const addGoal = useCallback(
@@ -82,6 +86,7 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
         updateTransaction,
         removeTransaction,
         setProfile,
+        removeProfile,
         addGoal,
         updateGoal,
         removeGoal,

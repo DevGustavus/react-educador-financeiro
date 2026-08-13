@@ -1,3 +1,10 @@
+import type { AIMessage } from '../types'
+
+const PERSONA =
+  'Você é um educador financeiro brasileiro. Responda de forma educativa, amigável e com exemplos práticos. Nunca dê recomendações de investimento específicas. Formate suas respostas em Markdown: use **negrito** para termos-chave, listas numeradas ou com marcadores para passos e conceitos, e títulos (##) quando a resposta for longa. Mantenha respostas curtas em texto direto.'
+
+const MODEL = 'gemini-3.6-flash'
+
 const EDUCATIONAL_DISCLAIMER =
   '\n\n---\n*Resposta gerada com finalidade educacional. Não constitui consultoria financeira.*'
 
@@ -32,28 +39,33 @@ function delay(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
-export async function enviarMensagem(mensagem: string): Promise<string> {
-  if (import.meta.env.VITE_GEMINI_API_KEY) {
+export async function enviarMensagem(
+  historico: AIMessage[],
+  contexto?: string,
+): Promise<string> {
+  const apiKey = import.meta.env.VITE_GEMINI_API_KEY
+
+  if (apiKey) {
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${import.meta.env.VITE_GEMINI_API_KEY}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${apiKey}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          contents: [
-            {
-              parts: [
-                {
-                  text: `Você é um educador financeiro brasileiro. Responda de forma educativa, amigável e com exemplos práticos. Nunca dê recomendações de investimento específicas. Pergunta: ${mensagem}`,
-                },
-              ],
-            },
-          ],
+          systemInstruction: {
+            parts: [{ text: contexto ? `${PERSONA}\n\n${contexto}` : PERSONA }],
+          },
+          contents: historico.map((m) => ({
+            role: m.role === 'user' ? 'user' : 'model',
+            parts: [{ text: m.content }],
+          })),
         }),
       },
     )
 
-    if (!response.ok) throw new Error('Erro ao comunicar com a IA')
+    if (!response.ok) {
+      throw new Error(`Erro ao comunicar com a IA (${response.status})`)
+    }
 
     const data = await response.json()
     return (
@@ -63,5 +75,6 @@ export async function enviarMensagem(mensagem: string): Promise<string> {
   }
 
   await delay(800 + Math.random() * 1200)
-  return findMockResponse(mensagem)
+  const ultima = historico[historico.length - 1]?.content ?? ''
+  return findMockResponse(ultima)
 }

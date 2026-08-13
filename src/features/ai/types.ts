@@ -5,6 +5,14 @@ export interface AIMessage {
   timestamp: string
 }
 
+export interface AIChatSession {
+  id: string
+  title: string
+  createdAt: string
+  updatedAt: string
+  messages: AIMessage[]
+}
+
 export type AIChatStatus = 'idle' | 'loading' | 'error'
 
 export interface AIChatState {

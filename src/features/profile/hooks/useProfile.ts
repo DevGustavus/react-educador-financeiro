@@ -3,7 +3,7 @@ import { classificarInvestidor } from '../utils/classifyInvestor'
 import type { FinancialProfile } from '../../../types'
 
 export function useProfile() {
-  const { profile, setProfile } = useFinance()
+  const { profile, setProfile, removeProfile } = useFinance()
 
   const salvarPerfil = (data: FinancialProfile) => {
     const { perfil, explicacao } = classificarInvestidor(data)
@@ -14,6 +14,7 @@ export function useProfile() {
   return {
     profile,
     salvarPerfil,
+    removerPerfil: removeProfile,
     temPerfil: profile !== null,
   }
 }

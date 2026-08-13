@@ -32,6 +32,8 @@ export interface FinancialProfile {
   patrimonio: number
   reservaEmergencia: number
   objetivos: string
+  situacaoFinanceira?: string
+  poupancaMensal?: string
   horizonteInvestimento: number
   toleranciaRisco: 1 | 2 | 3 | 4 | 5
   conhecimentoFinanceiro: 1 | 2 | 3 | 4 | 5

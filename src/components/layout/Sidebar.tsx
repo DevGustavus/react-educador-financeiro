@@ -1,5 +1,10 @@
-import { useState } from 'react'
 import { NavLink } from 'react-router-dom'
+
+interface SidebarProps {
+  open: boolean
+  collapsed: boolean
+  onClose: () => void
+}
 
 const navItems = [
   {
@@ -181,44 +186,32 @@ const navItems = [
   },
 ]
 
-export function Sidebar() {
-  const [open, setOpen] = useState(false)
-
+export function Sidebar({ open, collapsed, onClose }: SidebarProps) {
   return (
     <>
-      <button
-        onClick={() => setOpen(!open)}
-        className="rounded-lg p-2 text-gray-500 hover:bg-gray-100 lg:hidden cursor-pointer"
-        aria-label="Abrir menu"
-      >
-        <svg
-          className="h-6 w-6"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M4 6h16M4 12h16M4 18h16"
-          />
-        </svg>
-      </button>
-
       {open && (
         <div
           className="fixed inset-0 z-40 bg-black/30 lg:hidden"
-          onClick={() => setOpen(false)}
+          onClick={onClose}
         />
       )}
 
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-64 transform border-r border-gray-100 bg-white transition-transform duration-200 lg:static lg:z-0 lg:translate-x-0 ${open ? 'translate-x-0' : '-translate-x-full'}`}
+        className={`fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r border-gray-100 bg-white transition-transform duration-200 lg:sticky lg:top-0 lg:z-0 lg:h-screen lg:translate-x-0 lg:transition-[width] ${
+          open ? 'translate-x-0' : '-translate-x-full'
+        } ${collapsed ? 'lg:w-16' : 'lg:w-64'}`}
       >
-        <div className="flex h-16 items-center gap-2 border-b border-gray-100 px-6">
+        <div
+          className={`flex h-16 items-center gap-2 border-b border-gray-100 px-6 ${
+            collapsed ? 'lg:justify-center lg:px-0' : ''
+          }`}
+        >
           <span className="text-lg font-semibold text-emerald-600">EF</span>
-          <span className="text-sm font-medium text-gray-700">
+          <span
+            className={`text-sm font-medium text-gray-700 ${
+              collapsed ? 'lg:hidden' : ''
+            }`}
+          >
             Educador Financeiro
           </span>
         </div>
@@ -230,17 +223,22 @@ export function Sidebar() {
                 <NavLink
                   to={item.to}
                   end={item.to === '/'}
-                  onClick={() => setOpen(false)}
+                  onClick={onClose}
+                  title={collapsed ? item.label : undefined}
                   className={({ isActive }) =>
                     `flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+                      collapsed ? 'lg:justify-center lg:px-0' : ''
+                    } ${
                       isActive
                         ? 'bg-emerald-50 text-emerald-700'
                         : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                     }`
                   }
                 >
-                  {item.icon}
-                  {item.label}
+                  <span className="shrink-0">{item.icon}</span>
+                  <span className={collapsed ? 'lg:hidden' : ''}>
+                    {item.label}
+                  </span>
                 </NavLink>
               </li>
             ))}

@@ -1,36 +1,45 @@
 import type { CompoundInterestInput, CompoundInterestResult } from '../types'
 
+const arredondar = (valor: number) =>
+  Math.round((valor + Number.EPSILON) * 100) / 100
+
 export function calcularJurosCompostos(
   input: CompoundInterestInput,
 ): CompoundInterestResult {
-  const { capitalInicial, aporteMensal, taxaAnual, anos } = input
-  const taxaMensal = taxaAnual / 100 / 12
+  const capitalInicial = Math.max(0, input.capitalInicial)
+  const aporteMensal = Math.max(0, input.aporteMensal)
+  const anos = Math.max(0, input.anos)
+  const taxaMensal = Math.max(0, 1 + input.taxaAnual / 100) ** (1 / 12) - 1
   const meses = anos * 12
 
-  let total = capitalInicial
-  let totalInvestido = capitalInicial
-  const evolucao: CompoundInterestResult['evolucao'] = []
-
-  for (let mes = 1; mes <= meses; mes++) {
-    total = total * (1 + taxaMensal) + aporteMensal
-    totalInvestido += aporteMensal
-
-    if (mes % 12 === 0) {
-      evolucao.push({
-        ano: mes / 12,
-        total: Math.round(total * 100) / 100,
-        investido: Math.round(totalInvestido * 100) / 100,
-        rendimento: Math.round((total - totalInvestido) * 100) / 100,
-      })
-    }
+  const acumulado = (n: number) => {
+    const fator = (1 + taxaMensal) ** n
+    const serie =
+      taxaMensal === 0
+        ? aporteMensal * n
+        : aporteMensal * ((fator - 1) / taxaMensal)
+    return capitalInicial * fator + serie
   }
 
-  const patrimonioFinal = Math.round(total * 100) / 100
-  const investidoFinal = Math.round(totalInvestido * 100) / 100
+  const totalInvestido = capitalInicial + aporteMensal * meses
+  const patrimonioFinal = arredondar(acumulado(meses))
+  const investidoFinal = arredondar(totalInvestido)
+
+  const evolucao: CompoundInterestResult['evolucao'] = []
+  for (let ano = 1; ano <= anos; ano++) {
+    const total = acumulado(ano * 12)
+    const investido = capitalInicial + aporteMensal * ano * 12
+    evolucao.push({
+      ano,
+      total: arredondar(total),
+      investido: arredondar(investido),
+      rendimento: arredondar(total - investido),
+    })
+  }
 
   return {
     totalInvestido: investidoFinal,
-    rendimento: Math.round((patrimonioFinal - investidoFinal) * 100) / 100,
+    rendimento: arredondar(patrimonioFinal - investidoFinal),
     patrimonioFinal,
     evolucao,
   }

@@ -70,6 +70,7 @@ export function FinancePage() {
       </Card>
 
       <TransactionForm
+        key={editing?.id ?? 'novo'}
         open={formOpen}
         onClose={handleClose}
         onSave={handleSave}

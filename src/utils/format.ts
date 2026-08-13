@@ -5,6 +5,13 @@ export function formatarMoeda(valor: number): string {
   }).format(valor)
 }
 
+export function formatarNumero(valor: number): string {
+  return new Intl.NumberFormat('pt-BR', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(valor)
+}
+
 export function formatarData(data: string): string {
   return new Intl.DateTimeFormat('pt-BR').format(new Date(data + 'T00:00:00'))
 }

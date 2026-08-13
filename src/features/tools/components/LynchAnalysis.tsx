@@ -5,6 +5,12 @@ import { Input } from '../../../components/ui/Input'
 import { analisarLynch } from '../utils/lynch'
 import type { LynchResult } from '../utils/lynch'
 
+const formatarIndice = (valor: number) =>
+  new Intl.NumberFormat('pt-BR', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(valor)
+
 export function LynchAnalysis() {
   const [lpa, setLpa] = useState(0)
   const [crescimento, setCrescimento] = useState(0)
@@ -70,19 +76,33 @@ export function LynchAnalysis() {
 
         {resultado && (
           <div className="rounded-lg bg-gray-50 p-4 space-y-2">
-            <div className="flex justify-between text-sm">
-              <span className="text-gray-500">PEG Ratio:</span>
-              <span className="font-bold">{resultado.pegRatio}</span>
-            </div>
-            <div className="flex justify-between text-sm">
-              <span className="text-gray-500">Índice Lynch:</span>
-              <span className="font-bold">{resultado.indiceLynch}</span>
-            </div>
-            <p className="mt-2 text-sm text-gray-600">{resultado.explicacao}</p>
-            <p className="text-xs text-gray-400">
-              Ferramenta educacional. Não constitui recomendação de
-              investimento.
-            </p>
+            {resultado.erro ? (
+              <p className="text-sm text-red-600">{resultado.erro}</p>
+            ) : (
+              <>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-500">P/L:</span>
+                  <span className="font-bold">
+                    {formatarIndice(resultado.plRatio)}x
+                  </span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-500">PEG Ratio:</span>
+                  <span className="font-bold">
+                    {formatarIndice(resultado.pegRatio)}
+                  </span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-500">Índice Lynch:</span>
+                  <span className="font-bold">
+                    {formatarIndice(resultado.indiceLynch)}
+                  </span>
+                </div>
+                <p className="mt-2 text-sm text-gray-600">
+                  {resultado.explicacao}
+                </p>
+              </>
+            )}
           </div>
         )}
       </div>

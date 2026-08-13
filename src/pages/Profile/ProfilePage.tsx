@@ -11,7 +11,7 @@ import { StorageKeys } from '../../services/storage/types'
 import type { FinancialProfile } from '../../types'
 
 export function ProfilePage() {
-  const { profile, salvarPerfil, temPerfil } = useProfile()
+  const { profile, salvarPerfil, removerPerfil, temPerfil } = useProfile()
   const [onboardingDone] = useLocalStorage(StorageKeys.onboardingDone, false)
   const [showOnboarding, setShowOnboarding] = useState(false)
   const [editando, setEditando] = useState(false)
@@ -29,14 +29,25 @@ export function ProfilePage() {
     setEditando(false)
   }
 
+  const handleDelete = () => {
+    if (confirm('Deseja realmente excluir seu perfil de investimento?')) {
+      removerPerfil()
+    }
+  }
+
   if (showOnboarding) {
     return (
       <div className="space-y-6">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Onboarding</h1>
-          <p className="mt-1 text-sm text-gray-500">
-            Vamos conhecer melhor seu perfil financeiro.
-          </p>
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Onboarding</h1>
+            <p className="mt-1 text-sm text-gray-500">
+              Vamos conhecer melhor seu perfil financeiro.
+            </p>
+          </div>
+          <Button variant="secondary" onClick={() => setShowOnboarding(false)}>
+            Fechar
+          </Button>
         </div>
         <OnboardingFlow onFinish={() => setShowOnboarding(false)} />
       </div>
@@ -64,6 +75,11 @@ export function ProfilePage() {
           {temPerfil && !editando && (
             <Button variant="secondary" onClick={() => setEditando(true)}>
               Editar Perfil
+            </Button>
+          )}
+          {temPerfil && !editando && (
+            <Button variant="danger" onClick={handleDelete}>
+              Excluir Perfil
             </Button>
           )}
         </div>

@@ -1,13 +1,15 @@
 import { useRef, useEffect } from 'react'
 import { Spinner } from '../../../components/ui/Spinner'
+import { MarkdownContent } from './MarkdownContent'
 import type { AIMessage } from '../types'
 
 interface Props {
   messages: AIMessage[]
   loading: boolean
+  onSuggestion?: (suggestion: string) => void
 }
 
-export function AIChatMessages({ messages, loading }: Props) {
+export function AIChatMessages({ messages, loading, onSuggestion }: Props) {
   const bottomRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -44,12 +46,14 @@ export function AIChatMessages({ messages, loading }: Props) {
             'Como poupar dinheiro?',
             'O que é liberdade financeira?',
           ].map((sugestao) => (
-            <span
+            <button
               key={sugestao}
-              className="rounded-full bg-gray-100 px-3 py-1 text-xs text-gray-600"
+              type="button"
+              onClick={() => onSuggestion?.(sugestao)}
+              className="cursor-pointer rounded-full bg-gray-100 px-3 py-1 text-xs text-gray-600 transition-colors hover:bg-emerald-100 hover:text-emerald-700"
             >
               {sugestao}
-            </span>
+            </button>
           ))}
         </div>
       </div>
@@ -70,7 +74,11 @@ export function AIChatMessages({ messages, loading }: Props) {
                 : 'bg-gray-100 text-gray-800'
             }`}
           >
-            <p className="whitespace-pre-wrap">{msg.content}</p>
+            {msg.role === 'user' ? (
+              <p className="whitespace-pre-wrap">{msg.content}</p>
+            ) : (
+              <MarkdownContent content={msg.content} />
+            )}
           </div>
         </div>
       ))}

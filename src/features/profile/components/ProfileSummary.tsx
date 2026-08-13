@@ -79,6 +79,22 @@ export function ProfileSummary({ profile }: Props) {
             <dd className="font-medium text-gray-900">{profile.objetivos}</dd>
           </div>
         )}
+        {profile.situacaoFinanceira && (
+          <div>
+            <dt className="text-sm text-gray-500">Situação Financeira</dt>
+            <dd className="font-medium text-gray-900">
+              {profile.situacaoFinanceira}
+            </dd>
+          </div>
+        )}
+        {profile.poupancaMensal && (
+          <div>
+            <dt className="text-sm text-gray-500">Quanto guarda por mês</dt>
+            <dd className="font-medium text-gray-900">
+              {profile.poupancaMensal}
+            </dd>
+          </div>
+        )}
       </dl>
     </Card>
   )

@@ -58,6 +58,7 @@ export function GoalsPage() {
       </Card>
 
       <GoalForm
+        key={editing?.id ?? 'novo'}
         open={formOpen}
         onClose={handleClose}
         onSave={handleSave}

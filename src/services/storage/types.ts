@@ -8,6 +8,7 @@ export const StorageKeys = {
   preferences: `${STORAGE_PREFIX}:v${STORAGE_VERSION}:preferences`,
   aiHistory: `${STORAGE_PREFIX}:v${STORAGE_VERSION}:ai_history`,
   onboardingDone: `${STORAGE_PREFIX}:v${STORAGE_VERSION}:onboarding_done`,
+  acoesAnalisadas: `${STORAGE_PREFIX}:v${STORAGE_VERSION}:acoes_analisadas`,
 } as const
 
 export type StorageKey = (typeof StorageKeys)[keyof typeof StorageKeys]
